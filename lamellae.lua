@@ -60,6 +60,13 @@ end
 
 function redraw()
   screen.clear()
+  
+  -- PLACEHOLDER FOR COMB
+  screen.line_width(1)
+  screen.move(DRUM_DISPLAY_START_X, 0)
+  screen.line(DRUM_DISPLAY_START_X, 64)
+  screen.stroke()
+  
   -- draw notes
   for _,note in ipairs(drum) do
     local x = note.x
