@@ -3,8 +3,17 @@
 
 engine.name = "PolyPerc"
 
+KEY_DISPLAY_HEIGHT = 54
+KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
+
+NOTE_DISPLAY_SIZE = 2
+
+drum = {{key = 1, x = 12}, {key = 3, x = 64}, {key = 5, x = 64}} -- for testing, initalise blank normally
+num_of_keys = 18
+
 
 function init()
+  screen.aa(1)
   screen.level(15)
   
   
@@ -22,3 +31,16 @@ function init()
 
 end
 
+
+function redraw()
+  screen.clear()
+  -- draw notes
+  for _,note in ipairs(drum) do
+    local x = note.x
+    local y = ((KEY_DISPLAY_HEIGHT / num_of_keys) * note.key) + KEY_DISPLAY_PADDING
+    
+    screen.rect(x, y, NOTE_DISPLAY_SIZE, NOTE_DISPLAY_SIZE)
+    screen.fill()
+  end
+  screen.update()
+end
