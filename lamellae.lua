@@ -3,13 +3,18 @@
 
 engine.name = "PolyPerc"
 
+SCREEN_REFRESH_RATE = 15
+
 KEY_DISPLAY_HEIGHT = 54
 KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
 
 NOTE_DISPLAY_SIZE = 2
 
+
 drum = {{key = 1, x = 12}, {key = 3, x = 64}, {key = 5, x = 64}} -- for testing, initalise blank normally
 num_of_keys = 18
+
+screen_dirty = false
 
 
 function init()
@@ -29,6 +34,10 @@ function init()
   
   params:add{type = "control", id = "release", name = "Release", controlspec = controlspec.def{min = 0.1, max = 10, default = 2.5, warp = "lin", step = 0.1, units = "s"}, action = function(x) engine.release(x) end}
 
+
+  -- METROS
+  screen_refresh = metro.init(refresh)
+  screen_refresh:start(1/SCREEN_REFRESH_RATE)
 end
 
 
@@ -43,4 +52,11 @@ function redraw()
     screen.fill()
   end
   screen.update()
+end
+
+
+function refresh()
+  if screen_dirty then
+    redraw()
+  end
 end
