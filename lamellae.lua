@@ -8,10 +8,12 @@ SCREEN_REFRESH_RATE = 15
 KEY_DISPLAY_HEIGHT = 54
 KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
 
+DRUM_DISPLAY_START_X = 28
+
 NOTE_DISPLAY_SIZE = 2
 
 
-drum = {{key = 1, x = 12}, {key = 3, x = 64}, {key = 5, x = 64}} -- for testing, initalise blank normally
+drum = {{key = 1, x = 30}, {key = 3, x = 64}, {key = 5, x = 64}} -- for testing, initalise blank normally
 num_of_keys = 18
 
 screen_dirty = false
@@ -21,6 +23,7 @@ function init()
   screen.aa(1)
   screen.level(15)
   
+  params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2}
   
   params:add_separator("engine_controls", "Engine")
   
@@ -52,6 +55,16 @@ function redraw()
     screen.fill()
   end
   screen.update()
+end
+
+
+function enc(n,d)
+  if n == 3 then
+    for _,note in ipairs(drum) do
+      note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, (128 * params:get("drum_length")))
+    end
+    screen_dirty = true
+  end
 end
 
 
