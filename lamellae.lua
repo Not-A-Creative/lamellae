@@ -1,4 +1,5 @@
--- lamellae: a music box inspired generative instrument
+-- lamellae: a music box inspired 
+-- generative instrument
 
 engine.name = "PolyPerc"
 
