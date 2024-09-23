@@ -90,8 +90,8 @@ end
 
 
 function build_scale()
-  note_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
-  note_freq = MusicUtil.note_nums_to_freqs(note_nums)
+  key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
+  key_freq = MusicUtil.note_nums_to_freqs(note_nums)
 end
 
 
