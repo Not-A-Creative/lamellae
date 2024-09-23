@@ -17,6 +17,8 @@ DRUM_DISPLAY_START_X = 28
 NOTE_DISPLAY_SIZE = 2
 
 
+key1_held = false
+
 drum = {}
 
 scale_names = {}
@@ -100,6 +102,10 @@ function key(n,z)
   -- TODO: Key presses
   if n == 1 then
     key1_held = z == 1 and true or false
+  end
+  
+  if n == 2 and z == 1 then
+    params:bang("regen")
   end
 end
 
