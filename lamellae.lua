@@ -83,11 +83,6 @@ function redraw()
 end
 
 
-function key(n,z)
-  -- TODO: Key presses
-  
-end
-
 function enc(n,d)
   -- TODO ENC2 for 'motor' speed
   
@@ -97,6 +92,14 @@ function enc(n,d)
       play_note(note) 
     end
     screen_dirty = true
+  end
+end
+
+
+function key(n,z)
+  -- TODO: Key presses
+  if n == 1 then
+    key1_held = z == 1 and true or false
   end
 end
 
