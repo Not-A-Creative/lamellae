@@ -16,8 +16,7 @@ DRUM_DISPLAY_START_X = 28
 NOTE_DISPLAY_SIZE = 2
 
 
-drum = {{key = 1, x = 30}, {key = 3, x = 64}, {key = 5, x = 64}} -- for testing, initalise blank normally
-
+drum = {}
 
 scale_names = {}
 for i = 1,#MusicUtil.SCALES do
@@ -32,10 +31,12 @@ function init()
   screen.aa(1)
   screen.level(15)
   
-  
   -- PARAMS SETUP
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18}
-  params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2}
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
+  
   
   params:add_separator("scale_params", "Scale")
   params:add{type = "number", id = "root_note", name = "Root Note", min = 0, max = 127, default = 60, formatter = function(param) return MusicUtil.note_num_to_name(param:get(), true) end, action = function() build_scale() end}
@@ -43,10 +44,10 @@ function init()
   
   params:add_separator("engine_controls", "Engine")
   params:add{type = "control", id = "amp", name = "Amp", controlspec = controlspec.def{min = 0, max = 1, warp = "lin", step = 0.1, default = 0.8, quantum = 0.1}, action = function(x) engine.amp(x) end}
-  params:add{type = "control", id = "cutoff", name = "Filter Cutoff", controlspec = controlspec.def{min = 20, max = 20000, warp = "exp", default = 20000, step = 10, units = "hz", wrap = false}, action = function(x) engine.cutoff(x) end}
+  params:add{type = "control", id = "cutoff", name = "Filter Cutoff", controlspec = controlspec.def{min = 20, max = 20000, warp = "exp", default = 500, step = 10, units = "hz", wrap = false}, action = function(x) engine.cutoff(x) end}
   params:add{type = "control", id = "pan", name = "Pan", controlspec = controlspec.PAN, action = function(x) engine.pan(x) end}
   params:add{type = "control", id = "pw", name = "Pulse Width", controlspec = controlspec.def{min = 0, max = 1, warp = "lin", default = 0.5, step = 0.01}, action = function(x) engine.pw(x) end}
-  params:add{type = "control", id = "release", name = "Release", controlspec = controlspec.def{min = 0.1, max = 10, default = 2.5, warp = "lin", step = 0.1, units = "s"}, action = function(x) engine.release(x) end}
+  params:add{type = "control", id = "release", name = "Release", controlspec = controlspec.def{min = 0.1, max = 10, default = 1.5, warp = "lin", step = 0.1, units = "s"}, action = function(x) engine.release(x) end}
 
   
   params:bang()
@@ -81,7 +82,7 @@ end
 function enc(n,d)
   if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
-      note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, (128 * params:get("drum_length")))
+      note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, ((128 - DRUM_DISPLAY_START_X) * params:get("drum_length")))
       play_note(note) 
     end
     screen_dirty = true
@@ -95,6 +96,21 @@ function play_note(note)
   end
 end
 
+
+function generate_drum(number_of_notes)
+  drum = {}
+  
+  local number_of_keys = params:get("num_of_keys")
+  local start_x = DRUM_DISPLAY_START_X
+  local end_x = (128 - DRUM_DISPLAY_START_X) * params:get("drum_length")
+
+  for i = 1,number_of_notes do
+    new_note = {key = math.random(1, number_of_keys), x = math.random(start_x, end_x)}
+    table.insert(drum, new_note)
+  end
+  screen_dirty = true
+end
+  
 
 function build_scale()
   key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
