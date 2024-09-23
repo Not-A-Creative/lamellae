@@ -48,7 +48,9 @@ function init()
   params:add{type = "control", id = "pw", name = "Pulse Width", controlspec = controlspec.def{min = 0, max = 1, warp = "lin", default = 0.5, step = 0.01}, action = function(x) engine.pw(x) end}
   params:add{type = "control", id = "release", name = "Release", controlspec = controlspec.def{min = 0.1, max = 10, default = 2.5, warp = "lin", step = 0.1, units = "s"}, action = function(x) engine.release(x) end}
 
-
+  
+  params:bang()
+  
   -- METROS
   screen_refresh = metro.init(refresh)
   screen_refresh:start(1/SCREEN_REFRESH_RATE)
@@ -80,15 +82,23 @@ function enc(n,d)
   if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
       note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, (128 * params:get("drum_length")))
+      play_note(note) 
     end
     screen_dirty = true
   end
 end
 
 
+function play_note(note)
+  if note.x == DRUM_DISPLAY_START_X + 2 then
+    engine.hz(key_freq[note.key])
+  end
+end
+
+
 function build_scale()
   key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
-  key_freq = MusicUtil.note_nums_to_freqs(note_nums)
+  key_freq = MusicUtil.note_nums_to_freqs(key_nums)
 end
 
 
