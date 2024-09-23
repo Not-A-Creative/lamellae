@@ -19,6 +19,8 @@ NOTE_DISPLAY_SIZE = 2
 
 key1_held = false
 
+is_motor_running = false
+
 drum = {}
 
 scale_names = {}
@@ -39,6 +41,7 @@ function init()
   params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "control", id = "motor_time", name = "Motor Time", controlspec = controlspec.def{min = 0.1, max = 2, default = 1, step = 0.1, warp = "lin", quantum = 0.05}, action = function() run_motor() end}
   
   
   params:add_separator("scale_params", "Scale")
@@ -51,15 +54,16 @@ function init()
   params:add{type = "control", id = "pan", name = "Pan", controlspec = controlspec.PAN, action = function(x) engine.pan(x) end}
   params:add{type = "control", id = "pw", name = "Pulse Width", controlspec = controlspec.def{min = 0, max = 1, warp = "lin", default = 0.5, step = 0.01}, action = function(x) engine.pw(x) end}
   params:add{type = "control", id = "release", name = "Release", controlspec = controlspec.def{min = 0.1, max = 10, default = 1.5, warp = "lin", step = 0.1, units = "s"}, action = function(x) engine.release(x) end}
-
   
-  params:bang()
   
   -- METROS
   screen_refresh = metro.init(refresh)
   screen_refresh:start(1/SCREEN_REFRESH_RATE)
   
-  -- TODO: add clock for 'motor'
+  motor = metro.init(motor_tick)
+  
+  
+  params:bang()
 end
 
 
@@ -87,6 +91,9 @@ end
 
 function enc(n,d)
   -- TODO ENC2 for 'motor' speed
+  if n == 2 then
+    params:delta("motor_time", d)
+  end
   
   if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
@@ -99,13 +106,17 @@ end
 
 
 function key(n,z)
-  -- TODO: Key presses
   if n == 1 then
     key1_held = z == 1 and true or false
   end
   
   if n == 2 and z == 1 then
     params:bang("regen")
+  end
+  
+  if n == 3 and z == 1 then
+    is_motor_running = not is_motor_running
+    run_motor()
   end
 end
 
@@ -130,7 +141,20 @@ function generate_drum(number_of_notes)
   end
   screen_dirty = true
 end
-  
+
+
+function run_motor()
+  if is_motor_running then
+      motor.time = params:get("motor_time")
+      motor:start()
+    else
+      motor:stop()
+  end
+end
+
+function motor_tick()
+  enc(3,1) -- turns ENC3 once
+end
 
 function build_scale()
   key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
