@@ -1,5 +1,6 @@
 -- lamellae: a music box inspired 
 -- generative instrument
+-- TODO: Rest of the docstring
 
 
 MusicUtil = require("lib/musicutil")
@@ -55,6 +56,8 @@ function init()
   -- METROS
   screen_refresh = metro.init(refresh)
   screen_refresh:start(1/SCREEN_REFRESH_RATE)
+  
+  -- TODO: add clock for 'motor'
 end
 
 
@@ -66,6 +69,7 @@ function redraw()
   screen.move(DRUM_DISPLAY_START_X, 0)
   screen.line(DRUM_DISPLAY_START_X, 64)
   screen.stroke()
+  -- TODO: Comb graphics and animation
   
   -- draw notes
   for _,note in ipairs(drum) do
@@ -79,7 +83,14 @@ function redraw()
 end
 
 
+function key(n,z)
+  -- TODO: Key presses
+  
+end
+
 function enc(n,d)
+  -- TODO ENC2 for 'motor' speed
+  
   if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
       note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, ((128 - DRUM_DISPLAY_START_X) * params:get("drum_length")))
@@ -98,7 +109,7 @@ end
 
 
 function generate_drum(number_of_notes)
-  drum = {}
+  drum = {} -- REALLY IMPORTANT TO CLEAR PREVIOUS TABLE!
   
   local number_of_keys = params:get("num_of_keys")
   local start_x = DRUM_DISPLAY_START_X
