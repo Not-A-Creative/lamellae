@@ -80,7 +80,7 @@ end
 
 
 function enc(n,d)
-  if n == 3 then
+  if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
       note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, (128 * params:get("drum_length")))
     end
