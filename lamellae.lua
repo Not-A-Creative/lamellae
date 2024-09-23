@@ -70,7 +70,7 @@ function redraw()
   -- draw notes
   for _,note in ipairs(drum) do
     local x = note.x
-    local y = ((KEY_DISPLAY_HEIGHT / params:get("num_of_keys")) * note.key) + KEY_DISPLAY_PADDING
+    local y = math.floor(((KEY_DISPLAY_HEIGHT / params:get("num_of_keys")) * note.key) + KEY_DISPLAY_PADDING)
     
     screen.rect(x, y, NOTE_DISPLAY_SIZE, NOTE_DISPLAY_SIZE)
     screen.fill()
