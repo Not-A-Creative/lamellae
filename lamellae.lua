@@ -83,10 +83,14 @@ function redraw()
   --screen.stroke()
   -- TODO: Comb graphics and animation
   for _,key in ipairs(key_sprites) do
-    screen.move(0, key.base_top_y)
-    screen.line(key.x, key.end_top_y)
-    screen.line(key.x, key.end_bottom_y)
-    screen.line(0, key.base_top_y)
+    screen.level(key.level)
+    screen.move(0, key.top_y)
+    screen.line(key.x, key.top_y)
+    screen.line(key.x, key.bottom_y)
+    screen.line(0, key.top_y)
+    screen.fill()
+    screen.update()
+    screen.level(15)
   end
   
   -- draw notes
@@ -110,6 +114,7 @@ function enc(n,d)
   if n == 3 and d == 1 then
     for _,note in ipairs(drum) do
       note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, ((128 - DRUM_DISPLAY_START_X) * params:get("drum_length")))
+      animate_key(note.key, note.x)
       play_note(note) 
     end
     screen_dirty = true
@@ -174,8 +179,23 @@ function create_key_sprites()
   
   for i = 1,params:get("num_of_keys") do
     local y = calculate_key_y_coord(i)
-    local coords = {key = i, x = DRUM_DISPLAY_START_X, base_top_y = y, base_bottom_y = (y + KEY_BASE_THICKNESS), end_top_y = y, end_bottom_y = (y + KEY_BASE_THICKNESS)}
+    local coords = {key = i, x = DRUM_DISPLAY_START_X + 1.75, top_y = y, bottom_y = y + KEY_BASE_THICKNESS, level = 10}
     table.insert(key_sprites, coords)
+  end
+end
+
+
+function animate_key(key, x)
+  if x == DRUM_DISPLAY_START_X then
+    --key_sprites[key].end_top_y = key_sprites[key].end_top_y + (KEY_BASE_THICKNESS / 2)
+    --key_sprites[key].end_bottom_y = key_sprites[key].end_bottom_y - (KEY_BASE_THICKNESS / 2)
+    key_sprites[key].x = key_sprites[key].x - 1.5
+    key_sprites[key].level = 15
+  elseif x == (DRUM_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
+    --key_sprites[key].end_top_y = key_sprites[key].end_top_y - (KEY_BASE_THICKNESS / 2)
+    --key_sprites[key].end_bottom_y = key_sprites[key].end_bottom_y + (KEY_BASE_THICKNESS / 2)
+    key_sprites[key].x = key_sprites[key].x + 1.5
+    key_sprites[key].level = 10
   end
 end
 
