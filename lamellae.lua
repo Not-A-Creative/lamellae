@@ -84,10 +84,10 @@ function redraw()
   -- TODO: Comb graphics and animation
   for _,key in ipairs(key_sprites) do
     screen.level(key.level)
-    screen.move(0, key.top_y)
-    screen.line(key.x, key.top_y)
-    screen.line(key.x, key.bottom_y)
-    screen.line(0, key.top_y)
+    screen.move(0, key.y)
+    screen.line(key.x, key.y)
+    screen.line(key.x, (key.y + KEY_BASE_THICKNESS))
+    screen.line(0, key.y)
     screen.fill()
     screen.update()
     screen.level(15)
@@ -178,8 +178,7 @@ function create_key_sprites()
   key_sprites = {} -- Same issue as notes!
   
   for i = 1,params:get("num_of_keys") do
-    local y = calculate_key_y_coord(i)
-    local coords = {key = i, x = DRUM_DISPLAY_START_X + 1.75, top_y = y, bottom_y = y + KEY_BASE_THICKNESS, level = 10}
+    local coords = {key = i, x = DRUM_DISPLAY_START_X + 1.75, y = calculate_key_y_coord(i), level = 10}
     table.insert(key_sprites, coords)
   end
 end
