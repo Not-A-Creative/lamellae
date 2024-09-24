@@ -76,12 +76,7 @@ function redraw()
   
   screen.line_width(1)
   
-  -- PLACEHOLDER FOR COMB
-  --screen.line_width(1)
-  --screen.move(DRUM_DISPLAY_START_X, 0)
-  --screen.line(DRUM_DISPLAY_START_X, 64)
-  --screen.stroke()
-  -- TODO: Comb graphics and animation
+  -- Draw comb keys
   for _,key in ipairs(key_sprites) do
     screen.level(key.level)
     screen.move(0, key.y)
@@ -186,13 +181,9 @@ end
 
 function animate_key(key, x)
   if x == DRUM_DISPLAY_START_X then
-    --key_sprites[key].end_top_y = key_sprites[key].end_top_y + (KEY_BASE_THICKNESS / 2)
-    --key_sprites[key].end_bottom_y = key_sprites[key].end_bottom_y - (KEY_BASE_THICKNESS / 2)
     key_sprites[key].x = key_sprites[key].x - 1.5
     key_sprites[key].level = 15
   elseif x == (DRUM_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
-    --key_sprites[key].end_top_y = key_sprites[key].end_top_y - (KEY_BASE_THICKNESS / 2)
-    --key_sprites[key].end_bottom_y = key_sprites[key].end_bottom_y + (KEY_BASE_THICKNESS / 2)
     key_sprites[key].x = key_sprites[key].x + 1.5
     key_sprites[key].level = 10
   end
