@@ -1,6 +1,18 @@
--- lamellae: a music box inspired 
+-- Lamellae: 
+-- a music box inspired 
 -- generative instrument
--- TODO: Rest of the docstring
+--
+-- ENC2: 'Motor' Speed
+-- ENC3: Clockwise to play
+-- KEY2: Regenerate pattern
+-- KEY3: Start/Stop 'motor'
+--
+-- Note, scale and engine
+-- options in params
+--
+-- v1.0 @Not_A_Creative
+-- Full docs at: 
+-- github.com/Not-A-Creative/Lamellae
 
 
 MusicUtil = require("lib/musicutil")
