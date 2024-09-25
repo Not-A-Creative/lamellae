@@ -13,9 +13,11 @@ KEY_DISPLAY_HEIGHT = 54
 KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
 
 DRUM_DISPLAY_START_X = 28
+KEY_END_X = DRUM_DISPLAY_START_X + 1.75
 
 NOTE_DISPLAY_SIZE = 2
 
+KEY_DISPLAY_LEVEL_DEFAULT = 10
 KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
 
@@ -41,7 +43,7 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() generate_drum(params:get("num_of_notes")); create_key_sprites() end}
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 1, max = 18, default = 18, action = function() create_key_sprites(); generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
@@ -110,7 +112,7 @@ function enc(n,d)
     for _,note in ipairs(drum) do
       note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, ((128 - DRUM_DISPLAY_START_X) * params:get("drum_length")))
       animate_key(note.key, note.x)
-      play_note(note) 
+      play_note(note)
     end
     screen_dirty = true
   end
@@ -123,7 +125,7 @@ function key(n,z)
   end
   
   if n == 2 and z == 1 then
-    params:bang("regen")
+    generate_drum(params:get("num_of_notes"))
   end
   
   if n == 3 and z == 1 then
@@ -147,9 +149,13 @@ function generate_drum(number_of_notes)
   local start_x = DRUM_DISPLAY_START_X
   local end_x = (128 - DRUM_DISPLAY_START_X) * params:get("drum_length")
 
+  reset_all_key_animations()
+
   for i = 1,number_of_notes do
-    new_note = {key = math.random(1, number_of_keys), x = math.random(start_x, end_x)}
+    local new_note = {key = math.random(1, number_of_keys), x = math.random(start_x, end_x)}
+    
     table.insert(drum, new_note)
+    animate_key(new_note.key, new_note.x)
   end
   screen_dirty = true
 end
@@ -173,7 +179,7 @@ function create_key_sprites()
   key_sprites = {} -- Same issue as notes!
   
   for i = 1,params:get("num_of_keys") do
-    local coords = {key = i, x = DRUM_DISPLAY_START_X + 1.75, y = calculate_key_y_coord(i), level = 10}
+    local coords = {key = i, x = KEY_END_X, y = calculate_key_y_coord(i), level = KEY_DISPLAY_LEVEL_DEFAULT}
     table.insert(key_sprites, coords)
   end
 end
@@ -181,11 +187,19 @@ end
 
 function animate_key(key, x)
   if x == DRUM_DISPLAY_START_X then
-    key_sprites[key].x = key_sprites[key].x - 1.5
+    key_sprites[key].x = KEY_END_X - 1.5
     key_sprites[key].level = 15
   elseif x == (DRUM_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
-    key_sprites[key].x = key_sprites[key].x + 1.5
-    key_sprites[key].level = 10
+    key_sprites[key].x = KEY_END_X
+    key_sprites[key].level = KEY_DISPLAY_LEVEL_DEFAULT
+  end
+end
+
+
+function reset_all_key_animations()
+  for key = 1,#key_sprites do
+    key_sprites[key].x = KEY_END_X
+    key_sprites[key].level = KEY_DISPLAY_LEVEL_DEFAULT
   end
 end
 
