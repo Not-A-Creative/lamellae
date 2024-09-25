@@ -229,5 +229,6 @@ end
 function refresh()
   if screen_dirty then
     redraw()
+    screen_dirty = false
   end
 end
