@@ -43,7 +43,7 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 1, max = 18, default = 18, action = function() create_key_sprites(); generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
