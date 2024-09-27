@@ -32,9 +32,6 @@ NOTE_DISPLAY_SIZE = 2
 KEY_DISPLAY_LEVEL_DEFAULT = 9
 KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
-
-key1_held = false
-
 is_motor_running = false
 
 drum = {}
@@ -132,9 +129,6 @@ end
 
 
 function key(n,z)
-  if n == 1 then
-    key1_held = z == 1 and true or false
-  end
   
   if n == 2 and z == 1 then
     generate_drum(params:get("num_of_notes"))
