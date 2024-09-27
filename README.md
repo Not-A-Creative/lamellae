@@ -18,8 +18,8 @@ Via Maiden REPL with
 
 - ENC2: Play Speed
 - ENC3: Clockwise to play
-- KEY2: Regenerate the pattern
-- KEY3: Start/Stop automatic playing
+- KEY2: Start/Stop automatic playing
+- KEY3: Regenerate the pattern
 
 Other functions controllable from the params menu:
 
