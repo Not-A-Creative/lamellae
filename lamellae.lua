@@ -52,6 +52,7 @@ screen_dirty = false
 
 function init()
   screen.aa(1)
+  screen.line_width(1)
   screen.level(15)
   
   -- PARAMS SETUP
@@ -87,20 +88,7 @@ end
 
 function redraw()
   screen.clear()
-  
-  screen.line_width(1)
-  
-  -- Draw comb keys
-  for _,key in ipairs(key_sprites) do
-    screen.level(key.level)
-    screen.move(0, key.y)
-    screen.line(key.x, key.y)
-    screen.line(key.x, (key.y + KEY_BASE_THICKNESS))
-    screen.line(0, key.y)
-    screen.fill()
-    screen.update()
-    screen.level(15)
-  end
+  screen.level(15)
   
   -- draw notes
   for _,note in ipairs(drum) do
@@ -111,6 +99,18 @@ function redraw()
   end
   screen.fill()
   screen.update()
+  
+  -- Draw comb keys
+  for _,key in ipairs(key_sprites) do
+    screen.level(key.level)
+    screen.move(0, key.y)
+    screen.line(key.x, key.y)
+    screen.line(key.x, (key.y + KEY_BASE_THICKNESS))
+    screen.line(0, key.y)
+  
+    screen.fill()
+    screen.update()
+  end
 end
 
 
