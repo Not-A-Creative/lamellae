@@ -29,7 +29,7 @@ KEY_END_X = DRUM_DISPLAY_START_X + 1.75
 
 NOTE_DISPLAY_SIZE = 2
 
-KEY_DISPLAY_LEVEL_DEFAULT = 10
+KEY_DISPLAY_LEVEL_DEFAULT = 9
 KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
 
@@ -229,6 +229,5 @@ end
 function refresh()
   if screen_dirty then
     redraw()
-    screen_dirty = false
   end
 end
