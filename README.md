@@ -1,4 +1,5 @@
 # Lamellae
+![A screenshot of the script in norns](./assets/lamellae_cover.png)
 
 A generative instrument for norns, with interaction inspired by music boxes.
 
