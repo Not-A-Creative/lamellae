@@ -4,8 +4,8 @@
 --
 -- ENC2: 'Motor' Speed
 -- ENC3: Clockwise to play
--- KEY2: Regenerate pattern
--- KEY3: Start/Stop 'motor'
+-- KEY2: Start/Stop 'motor'
+-- KEY3: Regenerate pattern
 --
 -- Note, scale and engine
 -- options in params
@@ -18,6 +18,9 @@
 MusicUtil = require("lib/musicutil")
 
 engine.name = "PolyPerc"
+
+
+-- CONSTANTS
 
 SCREEN_REFRESH_RATE = 15
 
@@ -32,6 +35,11 @@ NOTE_DISPLAY_SIZE = 2
 KEY_DISPLAY_LEVEL_DEFAULT = 9
 KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
+
+-- VARIABLES
+
+screen_dirty = false
+
 is_motor_running = false
 
 drum = {}
@@ -42,9 +50,6 @@ scale_names = {}
 for i = 1,#MusicUtil.SCALES do
   table.insert(scale_names, MusicUtil.SCALES[i].name)
 end
-
-
-screen_dirty = false
 
 
 function init()
@@ -87,7 +92,7 @@ function redraw()
   screen.clear()
   screen.level(15)
   
-  -- draw notes
+  -- Draw notes
   for _,note in ipairs(drum) do
     local x = note.x
     local y = calculate_key_y_coord(note.key)
@@ -131,13 +136,14 @@ end
 function key(n,z)
   
   if n == 2 and z == 1 then
-    generate_drum(params:get("num_of_notes"))
-  end
-  
-  if n == 3 and z == 1 then
     is_motor_running = not is_motor_running
     run_motor()
   end
+  
+  if n == 3 and z == 1 then
+    generate_drum(params:get("num_of_notes"))
+  end
+
 end
 
 
