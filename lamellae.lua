@@ -62,7 +62,7 @@ function init()
   params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
-  params:add{type = "control", id = "motor_time", name = "Motor Time", controlspec = controlspec.def{min = 0.1, max = 2, default = 1, step = 0.1, warp = "lin", quantum = 0.05}, action = function() run_motor() end}
+  params:add{type = "control", id = "motor_time", name = "Motor Time", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
   
   
   params:add_separator("scale_params", "Scale")
@@ -82,7 +82,6 @@ function init()
   screen_refresh:start(1/SCREEN_REFRESH_RATE)
   
   motor = metro.init(motor_tick)
-  
   
   params:bang()
 end
@@ -175,12 +174,18 @@ end
 
 function run_motor()
   if is_motor_running then
-    motor.time = params:get("motor_time")
+    set_motor_time()
     motor:start()
   else
     motor:stop()
   end
 end
+
+
+function set_motor_time()
+  motor.time = 1 / params:get("motor_time")
+end
+
 
 function motor_tick()
   enc(3,1) -- turns ENC3 once
