@@ -116,7 +116,6 @@ end
 
 
 function enc(n,d)
-  
   if n == 2 then
     params:delta("motor_time", d)
   end
@@ -133,7 +132,6 @@ end
 
 
 function key(n,z)
-  
   if n == 2 and z == 1 then
     is_motor_running = not is_motor_running
     run_motor()
@@ -142,7 +140,6 @@ function key(n,z)
   if n == 3 and z == 1 then
     generate_drum(params:get("num_of_notes"))
   end
-
 end
 
 
@@ -224,6 +221,7 @@ end
 function calculate_key_y_coord(key)
   return math.floor(((KEY_DISPLAY_HEIGHT / params:get("num_of_keys")) * key) + KEY_DISPLAY_PADDING)
 end
+
 
 function build_scale()
   key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
