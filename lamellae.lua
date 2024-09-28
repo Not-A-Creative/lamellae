@@ -2,9 +2,9 @@
 -- a music box inspired 
 -- generative instrument
 --
--- ENC2: 'Motor' Speed
+-- ENC2: Play Speed
 -- ENC3: Clockwise to play
--- KEY2: Start/Stop 'motor'
+-- KEY2: Play/Stop
 -- KEY3: Regenerate pattern
 --
 -- Note, scale and engine
