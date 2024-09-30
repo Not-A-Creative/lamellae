@@ -57,17 +57,18 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); generate_pattern(params:get("num_of_notes")) end}
+  params:add{type = "control", id = "motor_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
+  
+  params:add_separator("pattern_params", "Pattern Options")
   params:add{type = "number", id = "pattern_length", name = "Pattern Length", min = 1, max = 10, default = 2, action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Pattern", action = function() generate_pattern(params:get("num_of_notes")) end}
-  params:add{type = "control", id = "motor_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
   
-  
-  params:add_separator("scale_params", "Scale")
+  params:add_separator("scale_params", "Keys & Scale")
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "number", id = "root_note", name = "Root Note", min = 0, max = 127, default = 60, formatter = function(param) return MusicUtil.note_num_to_name(param:get(), true) end, action = function() build_scale() end}
   params:add{type = "option", id = "scale", name = "Scale", options = scale_names, default = 11, action = function() build_scale() end}
-  
+
   params:add_separator("engine_controls", "Engine")
   params:add{type = "control", id = "amp", name = "Amp", controlspec = controlspec.def{min = 0, max = 1, warp = "lin", step = 0.1, default = 0.8, quantum = 0.1}, action = function(x) engine.amp(x) end}
   params:add{type = "control", id = "cutoff", name = "Filter Cutoff", controlspec = controlspec.def{min = 20, max = 20000, warp = "exp", default = 500, step = 10, units = "hz", wrap = false}, action = function(x) engine.cutoff(x) end}
