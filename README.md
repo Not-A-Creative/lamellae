@@ -2,7 +2,7 @@
 ![A screenshot of the script in norns](./assets/lamellae_cover.png)
 
 A music box inspired generative instrument for Norns.
-Create randomised patterns of controllable length and density, and play by turning an encoder or set the pattern playing at a controllable rate.
+Create randomised patterns of controllable length and density, which can be played by turning an encoder. Alternatively set the pattern playing at a constant controllable rate.
 
 ### Requirements
 - Norns
