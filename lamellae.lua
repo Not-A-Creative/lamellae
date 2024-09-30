@@ -2,10 +2,10 @@
 -- a music box inspired 
 -- generative instrument
 --
--- ENC2: Play Speed
--- ENC3: Clockwise to play
 -- KEY2: Play/Stop
 -- KEY3: Regenerate pattern
+-- ENC2: Play Speed
+-- ENC3: Clockwise to play
 --
 -- Note, scale and engine
 -- options in params

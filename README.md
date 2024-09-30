@@ -16,10 +16,10 @@ Via Maiden REPL with
 
 ### Controls
 
-- ENC2: Play Speed
-- ENC3: Clockwise to play
 - KEY2: Start/Stop automatic playing
 - KEY3: Regenerate the pattern
+- ENC2: Play Speed
+- ENC3: Turn Clockwise to play
 
 Other functions controllable from the params menu:
 
