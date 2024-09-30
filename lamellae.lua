@@ -27,8 +27,8 @@ SCREEN_REFRESH_RATE = 15
 KEY_DISPLAY_HEIGHT = 54
 KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
 
-DRUM_DISPLAY_START_X = 28
-KEY_END_X = DRUM_DISPLAY_START_X + 1.75
+PATTERN_DISPLAY_START_X = 28
+KEY_END_X = PATTERN_DISPLAY_START_X + 1.75
 
 NOTE_DISPLAY_SIZE = 2
 
@@ -42,7 +42,7 @@ screen_dirty = false
 
 is_motor_running = false
 
-drum = {}
+pattern = {}
 
 key_sprites = {}
 
@@ -58,10 +58,10 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); generate_drum(params:get("num_of_notes")) end}
-  params:add{type = "number", id = "drum_length", name = "Drum Length", min = 1, max = 10, default = 2, action = function() generate_drum(params:get("num_of_notes")) end}
-  params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_drum(params:get("num_of_notes")) end}
-  params:add{type = "trigger", id = "regen", name = "Regenerate Drum", action = function() generate_drum(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); generate_pattern(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "pattern_length", name = "Pattern Length", min = 1, max = 10, default = 2, action = function() generate_pattern(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_pattern(params:get("num_of_notes")) end}
+  params:add{type = "trigger", id = "regen", name = "Regenerate Pattern", action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "control", id = "motor_time", name = "Motor Time", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
   
   
@@ -92,7 +92,7 @@ function redraw()
   screen.level(15)
   
   -- Draw notes
-  for _,note in ipairs(drum) do
+  for _,note in ipairs(pattern) do
     local x = note.x
     local y = calculate_key_y_coord(note.key)
     
@@ -121,8 +121,8 @@ function enc(n,d)
   end
   
   if n == 3 and d == 1 then
-    for _,note in ipairs(drum) do
-      note.x = util.wrap(note.x + d, DRUM_DISPLAY_START_X, ((128 - DRUM_DISPLAY_START_X) * params:get("drum_length")))
+    for _,note in ipairs(pattern) do
+      note.x = util.wrap(note.x + d, PATTERN_DISPLAY_START_X, ((128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")))
       animate_key(note.key, note.x)
       play_note(note)
     end
@@ -138,31 +138,31 @@ function key(n,z)
   end
   
   if n == 3 and z == 1 then
-    generate_drum(params:get("num_of_notes"))
+    generate_pattern(params:get("num_of_notes"))
   end
 end
 
 
 function play_note(note)
-  if note.x == DRUM_DISPLAY_START_X + NOTE_DISPLAY_SIZE then
+  if note.x == PATTERN_DISPLAY_START_X + NOTE_DISPLAY_SIZE then
     engine.hz(key_freq[note.key])
   end
 end
 
 
-function generate_drum(number_of_notes)
-  drum = {} -- REALLY IMPORTANT TO CLEAR PREVIOUS TABLE!
+function generate_pattern(number_of_notes)
+  pattern = {} -- REALLY IMPORTANT TO CLEAR PREVIOUS TABLE!
   
   local number_of_keys = params:get("num_of_keys")
-  local start_x = DRUM_DISPLAY_START_X
-  local end_x = (128 - DRUM_DISPLAY_START_X) * params:get("drum_length")
+  local start_x = PATTERN_DISPLAY_START_X
+  local end_x = (128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")
 
   reset_all_key_animations()
 
   for i = 1,number_of_notes do
     local new_note = {key = math.random(1, number_of_keys), x = math.random(start_x, end_x)}
     
-    table.insert(drum, new_note)
+    table.insert(pattern, new_note)
     animate_key(new_note.key, new_note.x)
   end
   screen_dirty = true
@@ -200,10 +200,10 @@ end
 
 
 function animate_key(key, x)
-  if x == DRUM_DISPLAY_START_X then
+  if x == PATTERN_DISPLAY_START_X then
     key_sprites[key].x = KEY_END_X - 1.5
     key_sprites[key].level = 15
-  elseif x == (DRUM_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
+  elseif x == (PATTERN_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
     key_sprites[key].x = KEY_END_X
     key_sprites[key].level = KEY_DISPLAY_LEVEL_DEFAULT
   end
