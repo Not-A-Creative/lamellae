@@ -24,14 +24,13 @@ engine.name = "PolyPerc"
 
 SCREEN_REFRESH_RATE = 15
 
-KEY_DISPLAY_HEIGHT = 54
-KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
-
-PATTERN_DISPLAY_START_X = 28
-KEY_END_X = PATTERN_DISPLAY_START_X + 1.75
-
 NOTE_DISPLAY_SIZE = 2
 
+PATTERN_DISPLAY_START_X = 28
+
+KEY_DISPLAY_HEIGHT = 54
+KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
+KEY_END_X = PATTERN_DISPLAY_START_X + 1.75
 KEY_DISPLAY_LEVEL_DEFAULT = 9
 KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
@@ -62,7 +61,7 @@ function init()
   params:add{type = "number", id = "pattern_length", name = "Pattern Length", min = 1, max = 10, default = 2, action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Pattern", action = function() generate_pattern(params:get("num_of_notes")) end}
-  params:add{type = "control", id = "motor_time", name = "Motor Time", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
+  params:add{type = "control", id = "motor_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
   
   
   params:add_separator("scale_params", "Scale")
