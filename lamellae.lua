@@ -17,6 +17,8 @@
 
 MusicUtil = require("lib/musicutil")
 
+math.randomseed(os.time())
+
 engine.name = "PolyPerc"
 
 
