@@ -62,7 +62,7 @@ function init()
   params:add{type = "control", id = "motor_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
   
   params:add_separator("scale_params", "Keys & Scale")
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() create_key_sprites(); build_scale(); generate_pattern(params:get("num_of_notes")) end}
+  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() update_num_of_keys() end}
   params:add{type = "number", id = "root_note", name = "Root Note", min = 0, max = 127, default = 60, formatter = function(param) return MusicUtil.note_num_to_name(param:get(), true) end, action = function() build_scale() end}
   params:add{type = "option", id = "scale", name = "Scale", options = scale_names, default = 11, action = function() build_scale() end}
   
@@ -230,6 +230,12 @@ function build_scale()
   key_freq = MusicUtil.note_nums_to_freqs(key_nums)
 end
 
+
+function update_num_of_keys()
+  create_key_sprites()
+  build_scale() -- As this populates the associated note frequencies
+  generate_pattern(params:get("num_of_notes"))
+end
 
 function refresh()
   if screen_dirty then
