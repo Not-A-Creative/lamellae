@@ -17,8 +17,6 @@
 
 MusicUtil = require("lib/musicutil")
 
-math.randomseed(os.time())
-
 engine.name = "PolyPerc"
 
 
@@ -30,6 +28,7 @@ NOTE_DISPLAY_SIZE = 2
 
 PATTERN_DISPLAY_START_X = 28
 
+-- Note: naming convention for the representation of the 'lamellae' (or 'tongues') is 'keys' for brevity
 KEY_DISPLAY_HEIGHT = 54
 KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
 KEY_END_X = PATTERN_DISPLAY_START_X + 1.75
@@ -41,7 +40,7 @@ KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
 screen_dirty = false
 
-is_motor_running = false
+is_auto_run_on = false
 
 pattern = {}
 
@@ -59,7 +58,7 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add{type = "control", id = "motor_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_motor_time() end}
+  params:add{type = "control", id = "auto_run_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_auto_run_time() end}
   
   params:add_separator("scale_params", "Keys & Scale")
   params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() update_num_of_keys() end}
@@ -83,7 +82,7 @@ function init()
   screen_refresh = metro.init(refresh)
   screen_refresh:start(1/SCREEN_REFRESH_RATE)
   
-  motor = metro.init(motor_tick)
+  auto_run_metro = metro.init(auto_run_tick)
   
   params:bang()
 end
@@ -119,7 +118,7 @@ end
 
 function enc(n,d)
   if n == 2 then
-    params:delta("motor_time", d)
+    params:delta("auto_run_time", d)
   end
   
   if n == 3 and d == 1 then
@@ -135,8 +134,8 @@ end
 
 function key(n,z)
   if n == 2 and z == 1 then
-    is_motor_running = not is_motor_running
-    run_motor()
+    is_auto_run_on = not is_auto_run_on
+    auto_run()
   end
   
   if n == 3 and z == 1 then
@@ -171,22 +170,22 @@ function generate_pattern(number_of_notes)
 end
 
 
-function run_motor()
-  if is_motor_running then
-    set_motor_time()
-    motor:start()
+function auto_run()
+  if is_auto_run_on then
+    set_auto_run_time()
+    auto_run_metro:start()
   else
-    motor:stop()
+    auto_run_metro:stop()
   end
 end
 
 
-function set_motor_time()
-  motor.time = 1 / params:get("motor_time")
+function set_auto_run_time()
+  auto_run_metro.time = 1 / params:get("auto_run_time")
 end
 
 
-function motor_tick()
+function auto_run_tick()
   enc(3,1) -- turns ENC3 once
 end
 
