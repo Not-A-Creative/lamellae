@@ -11,6 +11,8 @@
 -- options in params
 --
 -- v1.0 @Not_A_Creative
+-- Full docs at: 
+-- github.com/Not-A-Creative/Lamellae
 
 
 MusicUtil = require("lib/musicutil")
@@ -65,7 +67,7 @@ function init()
   
   params:add_separator("pattern_params", "Pattern Options")
   params:add{type = "number", id = "pattern_length", name = "Pattern Length", min = 1, max = 10, default = 2, action = function() generate_pattern(params:get("num_of_notes")) end}
-  params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_pattern(params:get("num_of_notes")) end} -- be careful if increasing this maximum!
+  params:add{type = "number", id = "num_of_notes", name = "Number of Notes", min = 10, max = 200, default = 50, action = function() generate_pattern(params:get("num_of_notes")) end}
   params:add{type = "trigger", id = "regen", name = "Regenerate Pattern", action = function() generate_pattern(params:get("num_of_notes")) end}
 
   params:add_separator("engine_controls", "Engine")
@@ -119,9 +121,9 @@ function enc(n,d)
     params:delta("auto_run_time", d)
   end
   
-  if n == 3 and d == 1 then
+  if n == 3 and d > 0 then
     for _,note in ipairs(pattern) do
-      note.x = util.wrap(note.x + d, PATTERN_DISPLAY_START_X, ((128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")))
+      note.x = util.wrap(note.x + 1, PATTERN_DISPLAY_START_X, ((128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")))
       animate_key(note.key, note.x)
       play_note(note)
     end
