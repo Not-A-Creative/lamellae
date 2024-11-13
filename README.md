@@ -34,7 +34,7 @@ The screen displays a number of rectangles to the left, representing the 'lamell
 
 The bulk of the screen is taken up with the pattern of notes, each dot triggering a note when it passes a tongue. Movement of the pattern from left to right is controlled by turning ENC3 or can be set running at a constant rate with KEY2.
 
-The pattern loops back to the starting point at the tongues after reaching a specified distance, measured in widths of the display area (which can be changed in the params menu). At a Pattern Length of 1 the pattern loops directly from the right side of the screen. With longer lenghts positions continue being calculated past the border of the screen until the appropriate loop point.
+The pattern loops back to the starting point at the tongues after reaching a specified distance, measured in widths of the display area (which can be changed in the params menu).
 
 The pattern is generated completely randomly, with a total number of events that can again be set in the params. NOTE: There is not protection against multiple events holding the same coordinates. This is intentional for code simplicity and as it adds some extra variation in the way patterns may generate and individual note volume.
 
@@ -44,6 +44,6 @@ The pattern is regenerated if any of the key or pattern params are altered.
 
 The script uses Poly Perc with the associated engine options accessable in the params.
 
-By default the settings are; Amp = 0.8, Cutoff = 500 Hz, Pan = 0, Pulse Width = 0.5, Release = 1.5 s
+By default the settings are; Amp = 0.8, Cutoff = 800 Hz, Pan = 0, Pulse Width = 0.5, Release = 1.5 s
 
 Other engines may be used, but would require editing of the params setup.
