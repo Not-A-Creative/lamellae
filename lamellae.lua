@@ -10,10 +10,7 @@
 -- Note, scale and engine
 -- options in params
 --
--- v1.0 @Not_A_Creative
--- Full docs at: 
--- github.com/Not-A-Creative/Lamellae
-
+-- v @Not_A_Creative
 
 MusicUtil = require("lib/musicutil")
 
@@ -28,12 +25,12 @@ NOTE_DISPLAY_SIZE = 2
 
 PATTERN_DISPLAY_START_X = 28
 
--- Note: naming convention for the representation of the 'lamellae' (or 'tongues') is 'keys' for brevity
-KEY_DISPLAY_HEIGHT = 54
-KEY_DISPLAY_PADDING = (64 - KEY_DISPLAY_HEIGHT) / 2
-KEY_END_X = PATTERN_DISPLAY_START_X + 1.75
-KEY_DISPLAY_LEVEL_DEFAULT = 9
-KEY_BASE_THICKNESS = NOTE_DISPLAY_SIZE
+-- Note: naming convention for the representation of the 'lamellae' (or 'tongues') is 'plates' for brevity
+PLATE_DISPLAY_HEIGHT = 54
+PLATE_DISPLAY_PADDING = (64 - PLATE_DISPLAY_HEIGHT) / 2
+PLATE_END_X = PATTERN_DISPLAY_START_X + 1.75
+PLATE_DISPLAY_LEVEL_DEFAULT = 9
+PLATE_BASE_THICKNESS = NOTE_DISPLAY_SIZE
 
 
 -- VARIABLES
@@ -44,7 +41,7 @@ is_auto_run_on = false
 
 pattern = {}
 
-key_sprites = {}
+plate_sprites = {}
 
 scale_names = {}
 for i = 1,#MusicUtil.SCALES do
@@ -60,8 +57,8 @@ function init()
   -- PARAMS SETUP
   params:add{type = "control", id = "auto_run_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_auto_run_time() end}
   
-  params:add_separator("scale_params", "Keys & Scale")
-  params:add{type = "number", id = "num_of_keys", name = "Number of Keys", min = 5, max = 18, default = 18, action = function() update_num_of_keys() end}
+  params:add_separator("scale_params", "Lamellae & Scale")
+  params:add{type = "number", id = "num_of_plates", name = "Number of Lamella", min = 5, max = 18, default = 18, action = function() update_num_of_plates() end}
   params:add{type = "number", id = "root_note", name = "Root Note", min = 0, max = 127, default = 60, formatter = function(param) return MusicUtil.note_num_to_name(param:get(), true) end, action = function() build_scale() end}
   params:add{type = "option", id = "scale", name = "Scale", options = scale_names, default = 11, action = function() build_scale() end}
   
@@ -95,20 +92,20 @@ function redraw()
   -- Draw notes
   for _,note in ipairs(pattern) do
     local x = note.x
-    local y = calculate_key_y_coord(note.key)
+    local y = calculate_plate_y_coord(note.plate)
     
     screen.rect(x, y, NOTE_DISPLAY_SIZE, NOTE_DISPLAY_SIZE)
   end
   screen.fill()
   screen.update()
   
-  -- Draw comb keys
-  for _,key in ipairs(key_sprites) do
-    screen.level(key.level)
-    screen.move(0, key.y)
-    screen.line(key.x, key.y)
-    screen.line(key.x, (key.y + KEY_BASE_THICKNESS))
-    screen.line(0, key.y)
+  -- Draw comb plates
+  for _,plate in ipairs(plate_sprites) do
+    screen.level(plate.level)
+    screen.move(0, plate.y)
+    screen.line(plate.x, plate.y)
+    screen.line(plate.x, (plate.y + PLATE_BASE_THICKNESS))
+    screen.line(0, plate.y)
   
     screen.fill()
     screen.update()
@@ -124,7 +121,7 @@ function enc(n,d)
   if n == 3 and d > 0 then
     for _,note in ipairs(pattern) do
       note.x = util.wrap(note.x + 1, PATTERN_DISPLAY_START_X, ((128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")))
-      animate_key(note.key, note.x)
+      animate_plate(note.plate, note.x)
       play_note(note)
     end
     screen_dirty = true
@@ -146,7 +143,7 @@ end
 
 function play_note(note)
   if note.x == PATTERN_DISPLAY_START_X + NOTE_DISPLAY_SIZE then
-    engine.hz(key_freq[note.key])
+    engine.hz(plate_freq[note.plate])
   end
 end
 
@@ -154,17 +151,17 @@ end
 function generate_pattern(number_of_notes)
   pattern = {} -- REALLY IMPORTANT TO CLEAR PREVIOUS TABLE!
   
-  local number_of_keys = params:get("num_of_keys")
+  local number_of_plates = params:get("num_of_plates")
   local start_x = PATTERN_DISPLAY_START_X
   local end_x = (128 - PATTERN_DISPLAY_START_X) * params:get("pattern_length")
 
-  reset_all_key_animations()
+  reset_all_plate_animations()
 
   for i = 1,number_of_notes do
-    local new_note = {key = math.random(1, number_of_keys), x = math.random(start_x, end_x)}
+    local new_note = {plate = math.random(1, number_of_plates), x = math.random(start_x, end_x)}
     
     table.insert(pattern, new_note)
-    animate_key(new_note.key, new_note.x)
+    animate_plate(new_note.plate, new_note.x)
   end
   screen_dirty = true
 end
@@ -190,48 +187,48 @@ function auto_run_tick()
 end
 
 
-function create_key_sprites()
-  key_sprites = {} -- Same issue as notes!
+function create_plate_sprites()
+  plate_sprites = {} -- Same issue as notes!
   
-  for i = 1,params:get("num_of_keys") do
-    local coords = {key = i, x = KEY_END_X, y = calculate_key_y_coord(i), level = KEY_DISPLAY_LEVEL_DEFAULT}
-    table.insert(key_sprites, coords)
+  for i = 1,params:get("num_of_plates") do
+    local coords = {plate = i, x = PLATE_END_X, y = calculate_plate_y_coord(i), level = PLATE_DISPLAY_LEVEL_DEFAULT}
+    table.insert(plate_sprites, coords)
   end
 end
 
 
-function animate_key(key, x)
+function animate_plate(plate, x)
   if x == PATTERN_DISPLAY_START_X then
-    key_sprites[key].x = KEY_END_X - 1.5
-    key_sprites[key].level = 15
+    plate_sprites[plate].x = PLATE_END_X - 1.5
+    plate_sprites[plate].level = 15
   elseif x == (PATTERN_DISPLAY_START_X + NOTE_DISPLAY_SIZE) then
-    key_sprites[key].x = KEY_END_X
-    key_sprites[key].level = KEY_DISPLAY_LEVEL_DEFAULT
+    plate_sprites[plate].x = PLATE_END_X
+    plate_sprites[plate].level = PLATE_DISPLAY_LEVEL_DEFAULT
   end
 end
 
 
-function reset_all_key_animations()
-  for key = 1,#key_sprites do
-    key_sprites[key].x = KEY_END_X
-    key_sprites[key].level = KEY_DISPLAY_LEVEL_DEFAULT
+function reset_all_plate_animations()
+  for plate = 1,#plate_sprites do
+    plate_sprites[plate].x = PLATE_END_X
+    plate_sprites[plate].level = PLATE_DISPLAY_LEVEL_DEFAULT
   end
 end
 
 
-function calculate_key_y_coord(key)
-  return math.floor(((KEY_DISPLAY_HEIGHT / params:get("num_of_keys")) * key) + KEY_DISPLAY_PADDING)
+function calculate_plate_y_coord(plate)
+  return math.floor(((PLATE_DISPLAY_HEIGHT / params:get("num_of_plates")) * plate) + PLATE_DISPLAY_PADDING)
 end
 
 
 function build_scale()
-  key_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_keys"))
-  key_freq = MusicUtil.note_nums_to_freqs(key_nums)
+  plate_nums = MusicUtil.generate_scale_of_length(params:get("root_note"), params:get("scale"), params:get("num_of_plates"))
+  plate_freq = MusicUtil.note_nums_to_freqs(plate_nums)
 end
 
 
-function update_num_of_keys()
-  create_key_sprites()
+function update_num_of_plates()
+  create_plate_sprites()
   build_scale() -- As this populates the associated note frequencies
   generate_pattern(params:get("num_of_notes"))
 end
