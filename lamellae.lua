@@ -10,7 +10,7 @@
 -- Note, scale and engine
 -- options in params
 --
--- v @Not_A_Creative
+-- v1.0.0 @Not_A_Creative
 
 MusicUtil = require("lib/musicutil")
 
