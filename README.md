@@ -32,7 +32,7 @@ Other functions controllable from the params menu:
 
 The screen displays a number of rectangles to the left, representing the 'lamella' or 'tongues' of a music box. Each corresponds to an individual note in the assigned scale. The number of which can be changed from the params menu.
 
-The bulk of the screen is taken up with the pattern of notes, each dot triggering a note when it passes a tongue. Movement of the pattern from left to right is controlled by turning ENC3 or can be set running at a constant rate with KEY2.
+The bulk of the screen is taken up with the pattern of notes, each triggering the engine when passing a tongue. Movement of the pattern from left to right is controlled by turning ENC3 or can be set running at a constant rate with KEY2.
 
 The pattern loops back to the starting point at the tongues after reaching a specified distance, measured in widths of the display area (which can be changed in the params menu).
 
