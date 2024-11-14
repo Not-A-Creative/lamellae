@@ -11,7 +11,7 @@ Create randomised patterns of controllable length and note density, which can be
 
 Via Maiden REPL with
 ```
-;install https://github.com/Not-A-Creative/Lamellae
+;install https://github.com/Not-A-Creative/lamellae
 ```
 
 ### Controls
