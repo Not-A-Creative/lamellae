@@ -6,6 +6,7 @@ Create randomised patterns of controllable length and note density, which can be
 
 ### Requirements
 - Norns
+- Midi out (optional)
 
 ### Install
 
@@ -27,6 +28,7 @@ Other functions controllable from the params menu:
 - Total length of the pattern (in screen widths)
 - Number of events in the pattern
 - Engine controls (PolyPerc)
+- Midi Out options
 
 ### Interface
 
@@ -42,7 +44,7 @@ The pattern is regenerated if any of the key or pattern params are altered.
 
 ### Engine
 
-The script uses Poly Perc with the associated engine options accessable in the params.
+The script uses Poly Perc with the associated engine options accessable in the params. The engine can also be turned off, if needed from the params.
 
 By default the settings are; Amp = 0.8, Cutoff = 800 Hz, Pan = 0, Pulse Width = 0.5, Release = 1.5 s
 
