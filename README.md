@@ -1,5 +1,5 @@
 # Lamellae
-![A screenshot of the script in norns](./assets/lamellae_cover.png)
+![A screenshot of the script in norns](./doc/cover.png)
 
 A music box inspired generative instrument for Norns.
 Create randomised patterns of controllable length and note density, which can be played by turning an encoder, in the spirit of hand wound music boxes. Alternatively let the pattern automatically play at a set rate.
