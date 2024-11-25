@@ -10,7 +10,7 @@
 -- Note, scale and engine
 -- options in params
 --
--- v1.1.0 @Not_A_Creative
+-- v1.1.1 @Not_A_Creative
 
 MusicUtil = require("lib/musicutil")
 
@@ -31,8 +31,6 @@ PLATE_DISPLAY_PADDING = (64 - PLATE_DISPLAY_HEIGHT) / 2
 PLATE_END_X = PATTERN_DISPLAY_START_X + 1.75
 PLATE_DISPLAY_LEVEL_DEFAULT = 9
 PLATE_BASE_THICKNESS = NOTE_DISPLAY_SIZE
-
-DEFAULT_MIDI_VELOCITY = 97
 
 
 -- VARIABLES
@@ -70,10 +68,11 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add_group("midi_settting", "MIDI", 3)
+  params:add_group("midi_settting", "MIDI", 4)
   params:add{type = "option", id = "use_midi", name = "Use Midi", options = {"No", "Yes"}, default = 1, action = show_midi_param_options}
-  params:add{type = "option", id = "midi_device_in_use", name = "Midi Device", options = midi_device_names, action = function(x) midi_channel = x; midi_device = midi_devices[x] end}
+  params:add{type = "option", id = "midi_device_in_use", name = "Midi Device", options = midi_device_names, action = function(x) all_midi_notes_off(); midi_channel = x; midi_device = midi_devices[x] end}
   params:add{type = "control", id = "midi_note_length", name = "Midi Note Length", controlspec = controlspec.def{min = 0.1, max = 5.0, default = 1, step = 0.1, warp = "lin", units = "s"}}
+  params:add{type = "number", id = "midi_note_velocity", name = "Velocity", min = 1, max = 127, default = 97}
   
   params:add{type = "control", id = "auto_run_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_auto_run_time() end}
   
@@ -103,6 +102,9 @@ function init()
   auto_run_metro = metro.init(auto_run_tick)
   
   midi_note_time_out = metro.init(all_midi_notes_off)
+  
+  remove_active_notes = metro.init(remove_excess_midi_notes)
+  remove_active_notes:start(2)
   
   params:bang()
 end
@@ -175,8 +177,8 @@ function play_note(note)
       local note_num = plate_nums[note.plate]
       
       table.insert(active_midi_notes, note_num)
-      midi_device:note_on(note_num, DEFAULT_MIDI_VELOCITY, midi_channel)
-      midi_note_time_out:start(params:get("midi_note_length"))
+      midi_device:note_on(note_num, params:get("midi_note_velocity"), midi_channel)
+      midi_note_time_out:start(params:get("midi_note_length"), 1, 1)
     end
   
   end
@@ -185,8 +187,33 @@ end
 
 function all_midi_notes_off()
   for _,note in ipairs(active_midi_notes) do
-    midi_device:note_off(note, DEFAULT_VELOCITY, midi_channel)
+    midi_device:note_off(note, params:get("midi_note_velocity"), midi_channel)
   end
+  
+  active_midi_notes = {} -- Again table needs emptying!
+end
+
+
+-- This is probably not as optimised as it could be, but the crash is fixed and the currently playing notes aren't cut short
+function remove_excess_midi_notes()
+  local remaining_notes = {}
+  
+  -- Wont run if #active_notes < 64
+  for i = 64,#active_midi_notes do
+      table.insert(remaining_notes, active_midi_notes[i])
+  end
+  
+  -- Max active notes chosen as 64 note polyphony
+  while #active_midi_notes > 64 do
+    
+    -- Only turn the note off if it isn't in the notes currently playing
+    if not tab.contains(remaining_notes, active_midi_notes[1]) then
+      midi_device:note_off(active_midi_notes[1], params:get("midi_note_velocity"), midi_channel)
+    end
+    
+    table.remove(active_midi_notes, 1)
+  end
+  
 end
 
 
@@ -277,7 +304,7 @@ end
 
 
 function show_midi_param_options()
-  local midi_param_ids = {"midi_device_in_use", "midi_note_length"}
+  local midi_param_ids = {"midi_device_in_use", "midi_note_length", "midi_note_velocity"}
   
   for _,id in ipairs(midi_param_ids) do
     if params:string("use_midi") == "Yes" then
@@ -308,6 +335,7 @@ end
 function refresh()
   if screen_dirty then
     redraw()
+    screen_dirty = false
   end
 end
 
