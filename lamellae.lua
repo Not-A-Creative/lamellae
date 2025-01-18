@@ -10,7 +10,7 @@
 -- Note, scale and engine
 -- options in params
 --
--- v1.1.1 @Not_A_Creative
+-- v1.1.2 @Not_A_Creative
 
 MusicUtil = require("lib/musicutil")
 
@@ -49,9 +49,8 @@ for i = 1,#MusicUtil.SCALES do
 end
 
 -- Midi
-midi_devices = {}
-midi_device_names = {}
-midi_channel = 1
+local midi_devices = {}
+local midi_device_names = {}
 
 active_midi_notes = {}
 
@@ -68,11 +67,12 @@ function init()
   screen.level(15)
   
   -- PARAMS SETUP
-  params:add_group("midi_settting", "MIDI", 4)
+  params:add_group("midi_settting", "MIDI", 5)
   params:add{type = "option", id = "use_midi", name = "Use Midi", options = {"No", "Yes"}, default = 1, action = show_midi_param_options}
-  params:add{type = "option", id = "midi_device_in_use", name = "Midi Device", options = midi_device_names, action = function(x) all_midi_notes_off(); midi_channel = x; midi_device = midi_devices[x] end}
+  params:add{type = "option", id = "midi_device_in_use", name = "Midi Device", options = midi_device_names, action = function(x) all_midi_notes_off(); midi_device = midi.connect(x) end}
   params:add{type = "control", id = "midi_note_length", name = "Midi Note Length", controlspec = controlspec.def{min = 0.1, max = 5.0, default = 1, step = 0.1, warp = "lin", units = "s"}}
   params:add{type = "number", id = "midi_note_velocity", name = "Velocity", min = 1, max = 127, default = 97}
+  params:add{type = "number", id = "midi_channel", name = "Channel", min = 1, max = 16, default = 1}
   
   params:add{type = "control", id = "auto_run_time", name = "Auto Play Speed", controlspec = controlspec.def{min = 0.5, max = 20, default = 5, step = 0.5, quantum = (1 / (2*19.5)), warp = "lin"}, action = function() set_auto_run_time() end}
   
@@ -177,7 +177,7 @@ function play_note(note)
       local note_num = plate_nums[note.plate]
       
       table.insert(active_midi_notes, note_num)
-      midi_device:note_on(note_num, params:get("midi_note_velocity"), midi_channel)
+      midi_device:note_on(note_num, params:get("midi_note_velocity"), params:get("midi_channel"))
       midi_note_time_out:start(params:get("midi_note_length"), 1, 1)
     end
   
@@ -187,7 +187,7 @@ end
 
 function all_midi_notes_off()
   for _,note in ipairs(active_midi_notes) do
-    midi_device:note_off(note, params:get("midi_note_velocity"), midi_channel)
+    midi_device:note_off(note, params:get("midi_note_velocity"), params:get("midi_channel"))
   end
   
   active_midi_notes = {} -- Again table needs emptying!
@@ -208,7 +208,7 @@ function remove_excess_midi_notes()
     
     -- Only turn the note off if it isn't in the notes currently playing
     if not tab.contains(remaining_notes, active_midi_notes[1]) then
-      midi_device:note_off(active_midi_notes[1], params:get("midi_note_velocity"), midi_channel)
+      midi_device:note_off(active_midi_notes[1], params:get("midi_note_velocity"), params:get("midi_channel"))
     end
     
     table.remove(active_midi_notes, 1)
@@ -304,7 +304,7 @@ end
 
 
 function show_midi_param_options()
-  local midi_param_ids = {"midi_device_in_use", "midi_note_length", "midi_note_velocity"}
+  local midi_param_ids = {"midi_device_in_use", "midi_note_length", "midi_note_velocity", "midi_channel"}
   
   for _,id in ipairs(midi_param_ids) do
     if params:string("use_midi") == "Yes" then
